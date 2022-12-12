@@ -14,9 +14,10 @@ from keras.utils import to_categorical
 from get_data_train_test import get_data
 from scikeras.wrappers import KerasClassifier
 from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
 from get_data_train_test import get_data_numpy
 
-def train():
+def train_grid():
     
     # data 
     X_train, Y_train, X_test, Y_test = get_data_numpy()
@@ -36,7 +37,27 @@ def train():
     
     print('best_params',gs.best_params_)
     print('accuracy',gs.best_score_)
-    
+
+
+def train():
+    # data
+    X_train, Y_train, X_test, Y_test = get_data_numpy()
+
+    model = KerasClassifier(model=build_clf, layers=1, nodes=30, units=10, dropout=0.5)
+
+    params = {'batch_size': [32, 64, 128],
+              'epochs': [20, 50, 100],
+              'layers': [1, 2, 3],
+              'nodes': [30, 60, 90],
+              'units': [5, 10, 50, 100],
+              'dropout': [0.2, 0.3, 0.5]
+              }
+    gs = RandomizedSearchCV(estimator=model, param_grid=params, cv=10)
+    # now fit the dataset to the GridSearchCV object.
+    gs = gs.fit(X_train, Y_train)
+
+    print('best_params', gs.best_params_)
+    print('accuracy', gs.best_score_)
 def build_clf(layers,nodes,units,dropout):
   # creating the layers of the NN
     model = Sequential()
