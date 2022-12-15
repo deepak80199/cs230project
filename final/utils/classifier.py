@@ -5,6 +5,15 @@ from tensorflow import keras
 import numpy as np 
 
 def classify(user_df):
+    """
+    Given the user angle timeseries classify it
+
+    Parameters:
+        user_df (Pandas.dataframe): Dataframe consisting of 8 angles for each frame
+
+    Returns:
+        yhat (int): classification of user pose
+    """
     num  = user_df.shape[0]//30
     new_df = pd.dataframe
 
