@@ -18,6 +18,19 @@ from sklearn.model_selection import RandomizedSearchCV
 from get_data_train_test import get_data_numpy
 
 def train_grid():
+    """
+    Train function
+
+    This function is used to train model using grid search based on the parameters hardcoded  in the code.
+    The parameters to be searched are stored as params.
+    The search is performed for following: batch_size, epochs, layers, nodes, units, dropout
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     
     # data 
     X_train, Y_train, X_test, Y_test = get_data_numpy()
@@ -40,6 +53,19 @@ def train_grid():
 
 
 def train():
+    """
+    Train function
+
+    This function is used to train model using Randomized search based on the parameters hardcoded  in the code.
+    The parameters to be searched are stored as params.
+    The search is performed for following: batch_size, epochs, layers, nodes, units, dropout
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     # data
     X_train, Y_train, X_test, Y_test = get_data_numpy()
 
@@ -59,7 +85,20 @@ def train():
     print('best_params', gs.best_params_)
     print('accuracy', gs.best_score_)
 def build_clf(layers,nodes,units,dropout):
-  # creating the layers of the NN
+    """
+    This fucntion is used to build model
+
+    Parameters:
+        layers (int): number of lstm layers
+        nodes (int): number of nodes in each lstm layer
+        units (int): number of nodes in the dense layer
+        dropout (int): the dropout of lstm layer
+
+    Returns:
+        int: Description of return value
+    """
+
+    # creating the layers of the NN
     model = Sequential()
     
     if layers == 3:
