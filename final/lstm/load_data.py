@@ -5,8 +5,16 @@ import pandas as pd
 import os
     
 def load_base_data():
-    #{'Bhuj': 1 ,'Padam':2,  'Shav':3 , 'Tada':4 , 'Trik':5  ,'Vriksh':6}
-    # print(dir_list)
+    """
+    This class is used to load data from csv files
+
+    Parameters:
+        None
+
+    Returns:
+        x : Dataframe of angle time series
+        y : Label(yoga pose) corresponding to each record in x
+    """
     x = []
     y = []
     dir = ['Bhuj','Padam','Shav','Tada','Trik','Vriksh']

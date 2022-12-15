@@ -2,24 +2,35 @@
 
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
-import pandas as pd
 import cv2
 import mediapipe as mp
 import numpy as np
 import pandas as pd
 
 
-def evaluate_pose(user_df,pose,vid_path):
-    ins_df = pd.read_csv(str(pose)+'.csv')
-    
-    angle_diff_df = get_angle_diff(user_df,ins_df)
-    
+def evaluate_pose(user_df, pose, vid_path):
+    """
+    Evaluate the user pose against instruction pose
+
+    Parameters:
+        user_df (Pandas.dataframe): Dataframe consisting of 8 angles for each frame
+        pose (int): Classification of user pose
+        vid_path(string): Absolute to user vid path
+
+    Returns:
+        None
+    """
+
+    ins_df = pd.read_csv('ins_pose/' + str(pose) + '.csv')
+
+    angle_diff_df = get_angle_diff(user_df, ins_df)
+
     angle_diff_df_copy = angle_diff_df
-    angle_diff_df_color=angle_diff_df_copy.applymap(angleColor)
-    
+    angle_diff_df_color = angle_diff_df_copy.applymap(angleColor)
+
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
-    
+
     cap = cv2.VideoCapture(vid_path)
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -100,7 +111,7 @@ def evaluate_pose(user_df,pose,vid_path):
 
                 # Blank Frame for Skeleton
                 image = np.zeros((int(height), int(width), 3), dtype='uint8')
-                #image.fill(255)
+                # image.fill(255)
 
                 # Orange : (255, 69, 0)
                 # Red : (255,0,0)
@@ -110,36 +121,37 @@ def evaluate_pose(user_df,pose,vid_path):
                 # Left Elbow
                 # 'leftWES': (leftWrist, leftElbow, leftShoulder),
 
-
                 cv2.putText(image, str(angle_name_lst['leftWES']),
-                            tuple(np.multiply(leftElbow, [width+20, height]).astype(int)),
+                            tuple(np.multiply(leftElbow, [width + 20, height]).astype(int)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.line(image, tuple(np.multiply(leftShoulder, [width, height]).astype(int)),
                          tuple(np.multiply(leftElbow, [width, height]).astype(int)), (0, 255, 0), thickness=5)
                 cv2.line(image, tuple(np.multiply(leftWrist, [width, height]).astype(int)),
-                         tuple(np.multiply(leftElbow, [width, height]).astype(int)), line_color_lst['leftWES'], thickness=5)
+                         tuple(np.multiply(leftElbow, [width, height]).astype(int)), line_color_lst['leftWES'],
+                         thickness=5)
 
                 # Right Elbow
                 # 'rightWES': (rightWrist, rightElbow, rightShoulder)
 
-
                 cv2.putText(image, str(angle_name_lst['rightWES']),
-                            tuple(np.multiply(rightElbow, [width-330, height]).astype(int)),
+                            tuple(np.multiply(rightElbow, [width - 330, height]).astype(int)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.line(image, tuple(np.multiply(rightShoulder, [width, height]).astype(int)),
                          tuple(np.multiply(rightElbow, [width, height]).astype(int)), (0, 255, 0), thickness=5)
                 cv2.line(image, tuple(np.multiply(rightWrist, [width, height]).astype(int)),
-                         tuple(np.multiply(rightElbow, [width, height]).astype(int)), line_color_lst['rightWES'], thickness=5)
+                         tuple(np.multiply(rightElbow, [width, height]).astype(int)), line_color_lst['rightWES'],
+                         thickness=5)
 
                 # 2.Shoulder joint
                 # Left Shoulder
                 # 'leftESH': (leftElbow, leftShoulder, leftHip),
 
                 cv2.putText(image, str(angle_name_lst['leftESH']),
-                            tuple(np.multiply(leftShoulder, [width+20, height]).astype(int)),
+                            tuple(np.multiply(leftShoulder, [width + 20, height]).astype(int)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.line(image, tuple(np.multiply(leftShoulder, [width, height]).astype(int)),
-                         tuple(np.multiply(leftElbow, [width, height]).astype(int)), line_color_lst['leftESH'], thickness=5)
+                         tuple(np.multiply(leftElbow, [width, height]).astype(int)), line_color_lst['leftESH'],
+                         thickness=5)
                 cv2.line(image, tuple(np.multiply(leftHip, [width, height]).astype(int)),
                          tuple(np.multiply(leftShoulder, [width, height]).astype(int)), (0, 255, 0), thickness=5)
 
@@ -147,10 +159,11 @@ def evaluate_pose(user_df,pose,vid_path):
                 # 'rightESH': (rightElbow, rightShoulder, rightHip),
 
                 cv2.putText(image, str(angle_name_lst['rightESH']),
-                            tuple(np.multiply(rightShoulder, [width-350, height]).astype(int)),
+                            tuple(np.multiply(rightShoulder, [width - 350, height]).astype(int)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.line(image, tuple(np.multiply(rightShoulder, [width, height]).astype(int)),
-                         tuple(np.multiply(rightElbow, [width, height]).astype(int)),line_color_lst['rightESH'], thickness=5)
+                         tuple(np.multiply(rightElbow, [width, height]).astype(int)), line_color_lst['rightESH'],
+                         thickness=5)
                 cv2.line(image, tuple(np.multiply(rightHip, [width, height]).astype(int)),
                          tuple(np.multiply(rightShoulder, [width, height]).astype(int)), (0, 255, 0), thickness=5)
 
@@ -159,10 +172,11 @@ def evaluate_pose(user_df,pose,vid_path):
                 # 'leftSHK': (leftShoulder, leftHip, leftKnee),
 
                 cv2.putText(image, str(angle_name_lst['leftSHK']),
-                            tuple(np.multiply(leftHip, [width+20, height]).astype(int)),
+                            tuple(np.multiply(leftHip, [width + 20, height]).astype(int)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.line(image, tuple(np.multiply(leftShoulder, [width, height]).astype(int)),
-                         tuple(np.multiply(leftHip, [width, height]).astype(int)),line_color_lst['leftSHK'], thickness=5)
+                         tuple(np.multiply(leftHip, [width, height]).astype(int)), line_color_lst['leftSHK'],
+                         thickness=5)
                 cv2.line(image, tuple(np.multiply(leftHip, [width, height]).astype(int)),
                          tuple(np.multiply(leftKnee, [width, height]).astype(int)), (0, 255, 0), thickness=5)
 
@@ -170,10 +184,11 @@ def evaluate_pose(user_df,pose,vid_path):
                 # 'rightSHK': (rightShoulder, rightHip, rightKnee),
 
                 cv2.putText(image, str(angle_name_lst['rightSHK']),
-                            tuple(np.multiply(rightHip, [width-320, height]).astype(int)),
+                            tuple(np.multiply(rightHip, [width - 320, height]).astype(int)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.line(image, tuple(np.multiply(rightShoulder, [width, height]).astype(int)),
-                         tuple(np.multiply(rightHip, [width, height]).astype(int)), line_color_lst['rightSHK'], thickness=5)
+                         tuple(np.multiply(rightHip, [width, height]).astype(int)), line_color_lst['rightSHK'],
+                         thickness=5)
                 cv2.line(image, tuple(np.multiply(rightHip, [width, height]).astype(int)),
                          tuple(np.multiply(rightKnee, [width, height]).astype(int)), (0, 255, 0), thickness=5)
 
@@ -181,10 +196,11 @@ def evaluate_pose(user_df,pose,vid_path):
                 # Left Knee
                 # 'leftHKA': (leftHip, leftKnee, leftAnkle),
                 cv2.putText(image, str(angle_name_lst['leftHKA']),
-                            tuple(np.multiply(leftKnee, [width+20, height]).astype(int)),
+                            tuple(np.multiply(leftKnee, [width + 20, height]).astype(int)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.line(image, tuple(np.multiply(leftKnee, [width, height]).astype(int)),
-                         tuple(np.multiply(leftHip, [width, height]).astype(int)), line_color_lst['leftHKA'], thickness=5)
+                         tuple(np.multiply(leftHip, [width, height]).astype(int)), line_color_lst['leftHKA'],
+                         thickness=5)
                 cv2.line(image, tuple(np.multiply(leftKnee, [width, height]).astype(int)),
                          tuple(np.multiply(leftAnkle, [width, height]).astype(int)), (0, 255, 0), thickness=5)
 
@@ -192,13 +208,13 @@ def evaluate_pose(user_df,pose,vid_path):
                 # 'rightHKA': (rightHip, rightKnee, rightAnkle),
 
                 cv2.putText(image, str(angle_name_lst['rightHKA']),
-                            tuple(np.multiply(rightKnee, [width-420, height]).astype(int)),
+                            tuple(np.multiply(rightKnee, [width - 420, height]).astype(int)),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.line(image, tuple(np.multiply(rightKnee, [width, height]).astype(int)),
-                         tuple(np.multiply(rightHip, [width, height]).astype(int)), line_color_lst['rightHKA'], thickness=5)
+                         tuple(np.multiply(rightHip, [width, height]).astype(int)), line_color_lst['rightHKA'],
+                         thickness=5)
                 cv2.line(image, tuple(np.multiply(rightAnkle, [width, height]).astype(int)),
                          tuple(np.multiply(rightKnee, [width, height]).astype(int)), (0, 255, 0), thickness=5)
-
 
                 # connecting wrist to index and thumb
                 # right
@@ -272,9 +288,9 @@ def evaluate_pose(user_df,pose,vid_path):
             # Capture the frames
             cv2.imwrite(f'{"video/"}frame{i}.jpg', image)
             # overlay
-            tr = 0.3 # transparency between 0-1, show camera if 0
-            frame = ((1-tr) * image1.astype(np.float) + tr * image.astype(np.float)).astype(np.uint8)
-            #out.write(cv2.flip(frame,0))
+            tr = 0.3  # transparency between 0-1, show camera if 0
+            frame = ((1 - tr) * image1.astype(np.float) + tr * image.astype(np.float)).astype(np.uint8)
+            # out.write(cv2.flip(frame,0))
             cv2.imshow('Transparent result', frame)
             cv2.imwrite(f'{"vid/"}frame{i}.png', frame)
             i = i + 1
@@ -286,50 +302,83 @@ def evaluate_pose(user_df,pose,vid_path):
 
         cap.release()
         cv2.destroyAllWindows()
-    
+
+
 def create_vid():
-    img=[]
-    for i in range(0,500):
-        img.append(cv2.imread('vid/frame'+str(i)+'.png'))
+    img = []
+    for i in range(0, 500):
+        img.append(cv2.imread('vid/frame' + str(i) + '.png'))
 
-    height,width,layers=img[1].shape
-    fourcc = cv2.VideoWriter_fourcc('M','J','P','G')
-    video=cv2.VideoWriter('videoyoga.mp4',fourcc,20,(width,height))
+    height, width, layers = img[1].shape
+    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
+    video = cv2.VideoWriter('videoyoga.mp4', fourcc, 20, (width, height))
 
-    for j in range(0,500):
+    for j in range(0, 500):
         video.write(img[j])
 
     cv2.destroyAllWindows()
     video.release()
-    
-def get_angle_diff(df_user,df_ins):
-    angles = ['leftWES','leftESH','leftSHK','leftHKA','rightWES','rightESH','rightSHK','rightHKA']
+
+
+def get_angle_diff(df_user, df_ins):
+    """
+    Calculate the difference between user and instructor pose using DTW
+
+    Parameters:
+        df_user (Pandas.dataframe): Dataframe consisting of 8 angles for each frame of user
+        df_ins (Pandas.dataframe): Dataframe consisting of 8 angles for each frame of instructor
+
+    Returns:
+        angle_diff_df (Pandas.dataframe): Difference of user and instructor pose
+    """
+    angles = ['leftWES', 'leftESH', 'leftSHK', 'leftHKA', 'rightWES', 'rightESH', 'rightSHK', 'rightHKA']
     angle_dtw_dict = {}
     length = len(df_user['leftWES'].values)
-    angle_diff_dict = {'leftWES':[0]*length,'leftESH':[0]*length,'leftSHK':[0]*length,'leftHKA':[0]*length,'rightWES':[0]*length,'rightESH':[0]*length,'rightSHK':[0]*length,'rightHKA':[0]*length}
+    angle_diff_dict = {'leftWES': [0] * length, 'leftESH': [0] * length, 'leftSHK': [0] * length,
+                       'leftHKA': [0] * length, 'rightWES': [0] * length, 'rightESH': [0] * length,
+                       'rightSHK': [0] * length, 'rightHKA': [0] * length}
     for i in angles:
-        ls=list(df_user[i].values)
-        ls2=list(df_ins[i].values)
+        ls = list(df_user[i].values)
+        ls2 = list(df_ins[i].values)
         distance, path = fastdtw(ls, ls2)
-        angle_dtw_dict[i]={'distance':distance,'path':path}
+        angle_dtw_dict[i] = {'distance': distance, 'path': path}
 
-        for n,t in enumerate(angle_dtw_dict[i]['path']):
-            angle_diff_dict[i][t[0]]=(abs(ls[t[0]]-ls2[t[1]]))
-        
+        for n, t in enumerate(angle_dtw_dict[i]['path']):
+            angle_diff_dict[i][t[0]] = (abs(ls[t[0]] - ls2[t[1]]))
+
         angle_diff_df = pd.DataFrame(angle_diff_dict)
+
     return angle_diff_df
 
 
-
 def angleColor(angle):
-    if angle<=25:
-        return (0,255,0)
-    elif angle<=50:
-        return (0,0,255)
+    """
+    Calculate the color based on the difference
+
+    Parameters:
+        angle (int): angle
+
+    Returns:
+        color (tuple(int,int,int)): tuple of RGB values to representing the color
+    """
+    if angle <= 25:
+        return (0, 255, 0)
+    elif angle <= 50:
+        return (0, 0, 255)
     else:
-        return (255,0,0)
-    
+        return (255, 0, 0)
+
+
 def calculateAngle(x):
+    """
+    Calculate the angle based on the given 3 points
+
+    Parameters:
+        x (list(list(int))): list of 3 x,y coordinate
+
+    Returns:
+        angle (int): angle formed by the 3 coordinated
+    """
     a = np.array(x[0])
     b = np.array(x[1])
     c = np.array(x[2])
